@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Activity, Droplet, Heart, Plus, Phone, AlertCircle, ChevronRight, Search } from 'lucide-react';
+import { User, Activity, Droplet, Heart, Plus, Phone, AlertCircle, ChevronRight, Search, Ambulance, Brain, Calendar } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 // More realistic data with slight variations
@@ -19,7 +19,8 @@ const generatePatientData = (baseHR: number) => [
 const patients = [
   {
     id: 1,
-    name: "John Doe",
+    name: "Rajesh Kumar",
+    gender: "Male",
     condition: "Post-surgery Recovery",
     age: 45,
     height: "175 cm",
@@ -27,23 +28,36 @@ const patients = [
     deviceId: "MD-123456789",
     data: generatePatientData(72),
     status: "stable",
-    contact: "+1 (555) 123-4567"
+    contact: "+91 98765 43210",
+    mentalStatus: "Stable",
+    lastAssessment: "2024-03-15"
   },
   {
     id: 2,
-    name: "Jane Smith",
+    name: "Priya Sharma",
+    gender: "Female",
     condition: "Cardiac Monitoring",
-    age: 62,
+    age: 32,
     height: "165 cm",
     weight: "65 kg",
     deviceId: "MD-987654321",
     data: generatePatientData(78),
     status: "attention",
-    contact: "+1 (555) 987-6543"
+    contact: "+91 87654 32109",
+    mentalStatus: "Mild Anxiety",
+    lastAssessment: "2024-03-14",
+    menstrualData: {
+      lastPeriod: "2024-03-01",
+      cycleLength: 28,
+      nextPeriod: "2024-03-29",
+      symptoms: ["Mild cramps", "Fatigue"],
+      flow: "Moderate"
+    }
   },
   {
     id: 3,
-    name: "Mike Johnson",
+    name: "Amit Patel",
+    gender: "Male",
     condition: "Diabetes Management",
     age: 53,
     height: "180 cm",
@@ -51,7 +65,9 @@ const patients = [
     deviceId: "MD-456789123",
     data: generatePatientData(68),
     status: "stable",
-    contact: "+1 (555) 456-7890"
+    contact: "+91 76543 21098",
+    mentalStatus: "Good",
+    lastAssessment: "2024-03-13"
   }
 ];
 
@@ -62,6 +78,10 @@ function App() {
 
   const handleEmergencyCall = (contact: string) => {
     alert(`Initiating emergency call to ${contact}`);
+  };
+
+  const handleAmbulanceCall = () => {
+    alert(`Dispatching ambulance to patient's location. Emergency services will be notified.`);
   };
 
   const handleAddPatient = () => {
@@ -80,7 +100,7 @@ function App() {
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center">
               <Activity className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-xl font-semibold text-gray-900">MediDash</span>
+              <span className="ml-2 text-xl font-semibold text-gray-900">Mavex</span>
             </div>
             <button onClick={() => setSidebarOpen(false)} className="lg:hidden">
               <ChevronRight className="h-6 w-6 text-gray-500" />
@@ -161,6 +181,13 @@ function App() {
                   <Phone className="h-5 w-5 mr-2" />
                   Emergency Call
                 </button>
+                <button
+                  onClick={handleAmbulanceCall}
+                  className="bg-orange-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-orange-600 transition-colors"
+                >
+                  <AlertCircle className="h-5 w-5 mr-2" />
+                  Call Ambulance
+                </button>
                 <button className="bg-yellow-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-yellow-600 transition-colors">
                   <AlertCircle className="h-5 w-5 mr-2" />
                   SOS Alert
@@ -173,41 +200,106 @@ function App() {
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Patient Info Card */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="flex items-center mb-6">
-                <User className="h-6 w-6 text-blue-600 mr-2" />
-                <h2 className="text-xl font-semibold text-gray-900">Patient Information</h2>
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center mb-6">
+                  <User className="h-6 w-6 text-blue-600 mr-2" />
+                  <h2 className="text-xl font-semibold text-gray-900">Patient Information</h2>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Name:</span>
+                    <span className="font-medium">{selectedPatient.name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Gender:</span>
+                    <span className="font-medium">{selectedPatient.gender}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Medical Condition:</span>
+                    <span className="font-medium">{selectedPatient.condition}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Age:</span>
+                    <span className="font-medium">{selectedPatient.age}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Height:</span>
+                    <span className="font-medium">{selectedPatient.height}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Weight:</span>
+                    <span className="font-medium">{selectedPatient.weight}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Device ID:</span>
+                    <span className="font-medium">{selectedPatient.deviceId}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Emergency Contact:</span>
+                    <span className="font-medium">{selectedPatient.contact}</span>
+                  </div>
+                </div>
               </div>
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Name:</span>
-                  <span className="font-medium">{selectedPatient.name}</span>
+
+              {/* Mental Health Status */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center mb-6">
+                  <Brain className="h-6 w-6 text-blue-600 mr-2" />
+                  <h2 className="text-xl font-semibold text-gray-900">Mental Health Status</h2>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Medical Condition:</span>
-                  <span className="font-medium">{selectedPatient.condition}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Age:</span>
-                  <span className="font-medium">{selectedPatient.age}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Height:</span>
-                  <span className="font-medium">{selectedPatient.height}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Weight:</span>
-                  <span className="font-medium">{selectedPatient.weight}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Device ID:</span>
-                  <span className="font-medium">{selectedPatient.deviceId}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Emergency Contact:</span>
-                  <span className="font-medium">{selectedPatient.contact}</span>
+                <div className="space-y-4">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Current Status:</span>
+                    <span className="font-medium">{selectedPatient.mentalStatus}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Last Assessment:</span>
+                    <span className="font-medium">{selectedPatient.lastAssessment}</span>
+                  </div>
                 </div>
               </div>
+
+              {/* Menstrual Tracking (Only for female patients) */}
+              {selectedPatient.gender === 'Female' && 'menstrualData' in selectedPatient && (
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <div className="flex items-center mb-6">
+                    <Calendar className="h-6 w-6 text-pink-600 mr-2" />
+                    <h2 className="text-xl font-semibold text-gray-900">Menstrual Tracking</h2>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Last Period:</span>
+                      <span className="font-medium">{selectedPatient.menstrualData.lastPeriod}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Cycle Length:</span>
+                      <span className="font-medium">{selectedPatient.menstrualData.cycleLength} days</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Next Period:</span>
+                      <span className="font-medium">{selectedPatient.menstrualData.nextPeriod}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Flow:</span>
+                      <span className="font-medium">{selectedPatient.menstrualData.flow}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Symptoms:</span>
+                      <div className="mt-2">
+                        {selectedPatient.menstrualData.symptoms.map((symptom, index) => (
+                          <span
+                            key={index}
+                            className="inline-block bg-pink-100 text-pink-800 text-sm px-3 py-1 rounded-full mr-2 mb-2"
+                          >
+                            {symptom}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Vital Signs Grid */}
